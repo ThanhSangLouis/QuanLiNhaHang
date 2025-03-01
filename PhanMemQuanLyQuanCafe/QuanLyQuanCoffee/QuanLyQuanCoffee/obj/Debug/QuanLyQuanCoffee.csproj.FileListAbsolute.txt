@@ -1,0 +1,13 @@
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\bin\Debug\QuanLyQuanCoffee.exe.config
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\bin\Debug\QuanLyQuanCoffee.exe
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\bin\Debug\QuanLyQuanCoffee.pdb
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.csproj.AssemblyReference.cache
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.fLogin.resources
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.Properties.Resources.resources
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.csproj.GenerateResource.cache
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.csproj.CoreCompileInputs.cache
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.exe
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.pdb
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.fTableManager.resources
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.fAccountProfile.resources
+D:\PhanMemQuanLyQuanCafe\QuanLyQuanCoffee\QuanLyQuanCoffee\obj\Debug\QuanLyQuanCoffee.fAdmin.resources
