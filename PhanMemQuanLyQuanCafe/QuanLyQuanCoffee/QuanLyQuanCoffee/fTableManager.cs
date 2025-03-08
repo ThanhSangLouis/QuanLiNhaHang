@@ -57,21 +57,28 @@ namespace QuanLyQuanCoffee
         {
             flpTable.Controls.Clear();
             List<Table> Tablelist = TableDAO.Instance.loadTableList();
+
             foreach (Table item in Tablelist)
             {
                 Button btn = new Button() { Width = TableDAO.TableWidth, Height = TableDAO.TableHeight };
-                btn.Text = item.Name + Environment.NewLine + item.Status;
-                btn.Click += btn_Click;
-                btn.Tag = item;
-                switch (item.Status)
+                btn.Text = item.Name + Environment.NewLine + (item.ReservationStatus == 1 ? "Đã có người đặt" : item.Status);
+                btn.Tag = item; //  Gán cả đối tượng Table vào Tag của Button
+                btn.Click += btn_Click; // Gán sự kiện Click
+
+                // Cập nhật màu sắc theo trạng thái bàn
+                if (item.ReservationStatus == 1) // Bàn đã đặt trước
                 {
-                    case "Trống":
-                        btn.BackColor = Color.Aqua;
-                        break;
-                    default:
-                        btn.BackColor = Color.LightBlue;
-                        break;
+                    btn.BackColor = Color.Yellow;
                 }
+                else if (item.Status == "Trống")
+                {
+                    btn.BackColor = Color.Aqua;
+                }
+                else
+                {
+                    btn.BackColor = Color.LightBlue;
+                }
+
                 flpTable.Controls.Add(btn);
 
             }
@@ -104,9 +111,19 @@ namespace QuanLyQuanCoffee
         #region events
         private void btn_Click(object sender, EventArgs e)
         {
-            int tableID = ((sender as Button).Tag as Table).ID;
-            lsvBill.Tag = (sender as Button).Tag;
-            ShowBill(tableID);
+            Button btn = sender as Button;
+
+            if (btn.Tag is Table table) // ✅ Kiểm tra nếu Tag chứa đối tượng Table hợp lệ
+            {
+                int tableID = table.ID;
+                txbIDTable.Text = tableID.ToString(); // ✅ Hiển thị ID bàn lên TextBox
+                lsvBill.Tag = table; // Lưu bàn vào ListView để dùng sau
+                ShowBill(tableID);
+            }
+            else
+            {
+                MessageBox.Show("Lỗi: Không thể lấy ID bàn vì Tag không chứa đối tượng Table.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,6 +251,66 @@ namespace QuanLyQuanCoffee
         private void addFoodToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             btnAddFood_Click(this, new EventArgs());
+        }
+
+        private void btnReservation_Click(object sender, EventArgs e)
+        {
+            // Lấy ID bàn từ TextBox
+            if (string.IsNullOrEmpty(txbIDTable.Text))
+            {
+                MessageBox.Show("Vui lòng chọn bàn trước khi đặt!");
+                return;
+            }
+
+            int idTable = int.Parse(txbIDTable.Text);
+            string customerName = txbCustomerName.Text;
+            string phone = txbPhoneNumber.Text;
+            DateTime reservationTime = dtpkReservationTime.Value;
+
+            if (TableDAO.Instance.BookTable(idTable, customerName, phone, reservationTime))
+            {
+                MessageBox.Show("Đặt bàn thành công!");
+                loadTable(); // Cập nhật lại danh sách bàn
+            }
+            else
+            {
+                MessageBox.Show("Bàn đã có người đặt hoặc lỗi hệ thống!");
+            }
+        }
+        private void btnTable_Click(object sender, EventArgs e)
+        {
+            Button btn = sender as Button; // Lấy Button vừa được nhấn
+            int idTable = (int)btn.Tag; // Lấy ID bàn từ Tag của Button
+
+            // Hiển thị ID bàn lên TextBox
+            txbIDTable.Text = idTable.ToString();
+        }
+
+        private void btnCancelReser_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txbIDTable.Text))
+            {
+                MessageBox.Show("Vui lòng chọn bàn cần hủy đặt trước!");
+                return;
+            }
+
+            int idTable = int.Parse(txbIDTable.Text);
+
+            // Xác nhận hủy đặt bàn
+            DialogResult result = MessageBox.Show("Do you want cancel reservation?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                if (TableDAO.Instance.CancelReservation(idTable))
+                {
+                    MessageBox.Show("Cancel reservation successfully!");
+                    loadTable(); // Cập nhật lại danh sách bàn
+                }
+                else
+                {
+                    MessageBox.Show("Lỗi: Không thể hủy đặt bàn!");
+                }
+            }
         }
     }
 }

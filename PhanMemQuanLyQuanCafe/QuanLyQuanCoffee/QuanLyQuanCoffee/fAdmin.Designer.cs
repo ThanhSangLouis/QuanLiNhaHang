@@ -74,6 +74,11 @@
             this.dtpkToDate = new System.Windows.Forms.DateTimePicker();
             this.dtpkFromDate = new System.Windows.Forms.DateTimePicker();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.txbPageBill = new System.Windows.Forms.TextBox();
+            this.btnNextBillPage = new System.Windows.Forms.Button();
+            this.btnPreviousBillPage = new System.Windows.Forms.Button();
+            this.btnLastBillPage = new System.Windows.Forms.Button();
+            this.btnFirstBillPage = new System.Windows.Forms.Button();
             this.dtgvBill = new System.Windows.Forms.DataGridView();
             this.tpTable = new System.Windows.Forms.TabPage();
             this.panel13 = new System.Windows.Forms.Panel();
@@ -100,6 +105,7 @@
             this.txbDisplayName = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.panel26 = new System.Windows.Forms.Panel();
+            this.nmAccountType = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.panel27 = new System.Windows.Forms.Panel();
             this.txbUserName = new System.Windows.Forms.TextBox();
@@ -111,7 +117,8 @@
             this.btnAddAcc = new System.Windows.Forms.Button();
             this.panel29 = new System.Windows.Forms.Panel();
             this.dtgvAccount = new System.Windows.Forms.DataGridView();
-            this.nmAccountType = new System.Windows.Forms.NumericUpDown();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
             this.tcAdmin.SuspendLayout();
             this.tpCategory.SuspendLayout();
             this.panel12.SuspendLayout();
@@ -147,11 +154,11 @@
             this.panel15.SuspendLayout();
             this.panel25.SuspendLayout();
             this.panel26.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAccountType)).BeginInit();
             this.panel27.SuspendLayout();
             this.panel28.SuspendLayout();
             this.panel29.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtgvAccount)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmAccountType)).BeginInit();
             this.SuspendLayout();
             // 
             // tcAdmin
@@ -161,6 +168,7 @@
             this.tcAdmin.Controls.Add(this.tpBill);
             this.tcAdmin.Controls.Add(this.tpTable);
             this.tcAdmin.Controls.Add(this.tpAccount);
+            this.tcAdmin.Controls.Add(this.tabPage1);
             this.tcAdmin.Location = new System.Drawing.Point(28, 24);
             this.tcAdmin.Name = "tcAdmin";
             this.tcAdmin.SelectedIndex = 0;
@@ -589,11 +597,67 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.txbPageBill);
+            this.panel1.Controls.Add(this.btnNextBillPage);
+            this.panel1.Controls.Add(this.btnPreviousBillPage);
+            this.panel1.Controls.Add(this.btnLastBillPage);
+            this.panel1.Controls.Add(this.btnFirstBillPage);
             this.panel1.Controls.Add(this.dtgvBill);
             this.panel1.Location = new System.Drawing.Point(6, 49);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(930, 640);
             this.panel1.TabIndex = 0;
+            // 
+            // txbPageBill
+            // 
+            this.txbPageBill.Location = new System.Drawing.Point(428, 586);
+            this.txbPageBill.Multiline = true;
+            this.txbPageBill.Name = "txbPageBill";
+            this.txbPageBill.Size = new System.Drawing.Size(100, 32);
+            this.txbPageBill.TabIndex = 5;
+            this.txbPageBill.Text = "1";
+            this.txbPageBill.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.txbPageBill.TextChanged += new System.EventHandler(this.txbPageBill_TextChanged);
+            // 
+            // btnNextBillPage
+            // 
+            this.btnNextBillPage.Location = new System.Drawing.Point(645, 576);
+            this.btnNextBillPage.Name = "btnNextBillPage";
+            this.btnNextBillPage.Size = new System.Drawing.Size(138, 61);
+            this.btnNextBillPage.TabIndex = 4;
+            this.btnNextBillPage.Text = "Next Page";
+            this.btnNextBillPage.UseVisualStyleBackColor = true;
+            this.btnNextBillPage.Click += new System.EventHandler(this.btnNextBillPage_Click);
+            // 
+            // btnPreviousBillPage
+            // 
+            this.btnPreviousBillPage.Location = new System.Drawing.Point(147, 576);
+            this.btnPreviousBillPage.Name = "btnPreviousBillPage";
+            this.btnPreviousBillPage.Size = new System.Drawing.Size(138, 61);
+            this.btnPreviousBillPage.TabIndex = 3;
+            this.btnPreviousBillPage.Text = "Previous Page";
+            this.btnPreviousBillPage.UseVisualStyleBackColor = true;
+            this.btnPreviousBillPage.Click += new System.EventHandler(this.btnPreviousBillPage_Click);
+            // 
+            // btnLastBillPage
+            // 
+            this.btnLastBillPage.Location = new System.Drawing.Point(789, 576);
+            this.btnLastBillPage.Name = "btnLastBillPage";
+            this.btnLastBillPage.Size = new System.Drawing.Size(138, 61);
+            this.btnLastBillPage.TabIndex = 2;
+            this.btnLastBillPage.Text = "Last Page";
+            this.btnLastBillPage.UseVisualStyleBackColor = true;
+            this.btnLastBillPage.Click += new System.EventHandler(this.btnLastBillPage_Click);
+            // 
+            // btnFirstBillPage
+            // 
+            this.btnFirstBillPage.Location = new System.Drawing.Point(3, 576);
+            this.btnFirstBillPage.Name = "btnFirstBillPage";
+            this.btnFirstBillPage.Size = new System.Drawing.Size(138, 61);
+            this.btnFirstBillPage.TabIndex = 1;
+            this.btnFirstBillPage.Text = "First Page";
+            this.btnFirstBillPage.UseVisualStyleBackColor = true;
+            this.btnFirstBillPage.Click += new System.EventHandler(this.btnFirstBillPage_Click);
             // 
             // dtgvBill
             // 
@@ -603,7 +667,7 @@
             this.dtgvBill.Name = "dtgvBill";
             this.dtgvBill.RowHeadersWidth = 62;
             this.dtgvBill.RowTemplate.Height = 28;
-            this.dtgvBill.Size = new System.Drawing.Size(924, 634);
+            this.dtgvBill.Size = new System.Drawing.Size(924, 555);
             this.dtgvBill.TabIndex = 0;
             // 
             // tpTable
@@ -843,6 +907,18 @@
             this.panel26.Size = new System.Drawing.Size(457, 70);
             this.panel26.TabIndex = 2;
             // 
+            // nmAccountType
+            // 
+            this.nmAccountType.Location = new System.Drawing.Point(215, 18);
+            this.nmAccountType.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nmAccountType.Name = "nmAccountType";
+            this.nmAccountType.Size = new System.Drawing.Size(120, 26);
+            this.nmAccountType.TabIndex = 1;
+            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -949,17 +1025,15 @@
             this.dtgvAccount.Size = new System.Drawing.Size(446, 580);
             this.dtgvAccount.TabIndex = 0;
             // 
-            // nmAccountType
+            // tabPage1
             // 
-            this.nmAccountType.Location = new System.Drawing.Point(215, 18);
-            this.nmAccountType.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nmAccountType.Name = "nmAccountType";
-            this.nmAccountType.Size = new System.Drawing.Size(120, 26);
-            this.nmAccountType.TabIndex = 1;
+            this.tabPage1.Location = new System.Drawing.Point(4, 29);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(942, 701);
+            this.tabPage1.TabIndex = 5;
+            this.tabPage1.Text = "Report";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // fAdmin
             // 
@@ -999,6 +1073,7 @@
             this.tpBill.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtgvBill)).EndInit();
             this.tpTable.ResumeLayout(false);
             this.panel13.ResumeLayout(false);
@@ -1017,12 +1092,12 @@
             this.panel25.PerformLayout();
             this.panel26.ResumeLayout(false);
             this.panel26.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmAccountType)).EndInit();
             this.panel27.ResumeLayout(false);
             this.panel27.PerformLayout();
             this.panel28.ResumeLayout(false);
             this.panel29.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dtgvAccount)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmAccountType)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1113,5 +1188,12 @@
         private System.Windows.Forms.DataGridView dtgvAccount;
         private System.Windows.Forms.Button btnResetPassword;
         private System.Windows.Forms.NumericUpDown nmAccountType;
+        private System.Windows.Forms.Button btnFirstBillPage;
+        private System.Windows.Forms.TextBox txbPageBill;
+        private System.Windows.Forms.Button btnNextBillPage;
+        private System.Windows.Forms.Button btnPreviousBillPage;
+        private System.Windows.Forms.Button btnLastBillPage;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.DirectoryServices.DirectoryEntry directoryEntry1;
     }
 }

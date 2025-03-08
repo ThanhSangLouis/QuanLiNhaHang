@@ -26,7 +26,7 @@ namespace QuanLyQuanCoffee.DAO
         public List<Table> loadTableList()
         {
             List<Table> tableList = new List<Table>();
-            DataTable data = DataProvider.Instance.ExecuteQuery("USP_GetTableList");
+            DataTable data = DataProvider.Instance.ExecuteQuery("SELECT * from dbo.TableFood");
             foreach (DataRow item in data.Rows)
             {
                 Table table = new Table(item);  
@@ -34,5 +34,25 @@ namespace QuanLyQuanCoffee.DAO
             }
             return tableList;
         }
+        // Thêm tính năng đặt bàn và huỷ đặt bàn
+        public bool BookTable(int idTable, string customerName, string phone, DateTime reservationTime)
+        {
+            string query = "EXEC USP_BookTable @idTable , @customerName , @phone , @reservationTime";
+            int result = DataProvider.Instance.ExecuteNonQuery(query, new object[] { idTable, customerName, phone, reservationTime });
+
+            //Sau khi đặt bàn, cập nhật trạng thái bàn thành "Có Người"
+            string updateQuery = "UPDATE TableFood SET status = N'Có người' WHERE id = @idTable";
+            DataProvider.Instance.ExecuteNonQuery(updateQuery, new object[] { idTable });
+
+            return result > 0;
+        }
+
+        public bool CancelReservation(int idTable)
+        {
+            string query = "EXEC USP_CancelReservation @idTable";
+            int result = DataProvider.Instance.ExecuteNonQuery(query, new object[] { idTable });
+            return result > 0;
+        }
+
     }
 }

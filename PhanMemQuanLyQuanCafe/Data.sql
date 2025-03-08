@@ -270,83 +270,6 @@ BEGIN
     END
 END
 GO
---Bonus thêm(nếu cần):
-WITH CTE AS (
-    SELECT id, 
-           MIN(id) OVER (PARTITION BY name, idCategory, price) AS min_id,
-           ROW_NUMBER() OVER (PARTITION BY name, idCategory, price ORDER BY id) AS rn
-    FROM dbo.Food
-)
-UPDATE BI
-SET idFood = CTE.min_id
-FROM dbo.BillInfo BI
-JOIN CTE ON BI.idFood = CTE.id
-WHERE CTE.rn > 1;
---Xoá trùng lặp Food
---B1:
-SELECT name, idCategory, price, COUNT(*)
-FROM dbo.Food
-GROUP BY name, idCategory, price
-HAVING COUNT(*) > 1;
---B2:
-WITH CTE AS (
-    SELECT id, 
-           ROW_NUMBER() OVER (PARTITION BY name, idCategory, price ORDER BY id) AS rn
-    FROM dbo.Food
-)
-DELETE F
-FROM dbo.Food F
-JOIN CTE ON F.id = CTE.id
-WHERE CTE.rn > 1;
---Xoá trùng lặp FoodCategory
-SELECT name, COUNT(*) AS DuplicateCount
-FROM dbo.FoodCategory
-GROUP BY name
-HAVING COUNT(*) > 1;
-
-WITH CTE AS (
-    SELECT id, 
-           ROW_NUMBER() OVER (PARTITION BY name ORDER BY id) AS rn
-    FROM dbo.FoodCategory
-)
-DELETE FROM dbo.FoodCategory WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
---Xoá trùng lặp Bill
-SELECT DateCheckIn, DateCheckOut, idTable, [status], COUNT(*) AS DuplicateCount
-FROM dbo.Bill
-GROUP BY DateCheckIn, DateCheckOut, idTable, [status]
-HAVING COUNT(*) > 1;
-
-WITH CTE AS (
-    SELECT id, 
-           ROW_NUMBER() OVER (PARTITION BY DateCheckIn, DateCheckOut, idTable, [status] ORDER BY id) AS rn
-    FROM dbo.Bill
-)
-DELETE FROM dbo.Bill WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
---Xoá trùng lặp TableFood
-SELECT name, status, COUNT(*) AS DuplicateCount
-FROM dbo.TableFood
-GROUP BY name, status
-HAVING COUNT(*) > 1;
-WITH CTE AS (
-    SELECT id, 
-           ROW_NUMBER() OVER (PARTITION BY name, status ORDER BY id) AS rn
-    FROM dbo.TableFood
-)
-DELETE FROM dbo.TableFood WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
---Xoá trùng lặp BillInfo
-SELECT idBill, idFood, COUNT(*) AS DuplicateCount
-FROM dbo.BillInfo
-GROUP BY idBill, idFood
-HAVING COUNT(*) > 1;
-
-WITH CTE AS (
-    SELECT id, 
-           ROW_NUMBER() OVER (PARTITION BY idBill, idFood ORDER BY id) AS rn
-    FROM dbo.BillInfo
-)
-DELETE FROM dbo.BillInfo
-WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
-GO
 
 delete dbo.BillInfo
 delete dbo.Bill
@@ -513,4 +436,84 @@ END
 GO
 
 SELECT userName, displayName, type FROM Account
-	
+GO
+
+create PROC USP_GetListBillByDateAndPage
+@checkIn date, @checkOut date, @page int
+as
+begin
+	Declare @pageRows int = 10
+	declare @selectRows	int  = @pageRows
+	Declare @exceptRows int = (@page - 1) * @pageRows
+
+	;with BillShow as (select b.id, t.name as [Table Name],b.totalPrice as [Total Price], DateCheckIn , DateCheckOut, discount as [Discount]
+	from dbo.Bill as b, dbo.TableFood as t
+	where DateCheckIn >= @checkIn and DateCheckOut <= @checkOut and b.status = 1
+	and t.id = b.idTable)
+
+	select TOP (@selectRows) * from BillShow where id NOT IN(select TOP(@exceptRows) id from BillShow)
+end
+GO
+
+create PROC USP_GetNumBillByDate
+@checkIn date, @checkOut date
+as
+begin
+	select COUNT(*)
+	from dbo.Bill as b, dbo.TableFood as t
+	where DateCheckIn >= @checkIn and DateCheckOut <= @checkOut and b.status = 1
+	and t.id = b.idTable
+end
+GO
+
+ALTER TABLE TableFood ADD reservationStatus INT DEFAULT 0;
+GO
+CREATE TABLE Reservation (
+    id INT IDENTITY PRIMARY KEY,
+    idTable INT NOT NULL, --Bàn được đặt trước
+    customerName NVARCHAR(100) NOT NULL, --Tên khách đặt bàn
+    phone NVARCHAR(15) NOT NULL, --Số điện thoại khách
+    reservationTime DATETIME NOT NULL, --Thời gian khách đặt bàn
+    status INT DEFAULT 0, -- 0: Chờ xác nhận, 1: Đã xác nhận, 2: Đã hủy
+    FOREIGN KEY (idTable) REFERENCES TableFood(id)
+);
+GO
+
+CREATE PROCEDURE USP_BookTable
+    @idTable INT,
+    @customerName NVARCHAR(100),
+    @phone NVARCHAR(15),
+    @reservationTime DATETIME
+AS
+BEGIN
+    -- Kiểm tra xem bàn đã được đặt trước chưa
+    IF EXISTS (SELECT * FROM Reservation WHERE idTable = @idTable AND reservationTime = @reservationTime AND status = 0)
+    BEGIN
+        PRINT 'Bàn này đã có người đặt trước vào thời gian này!';
+        RETURN;
+    END
+
+    -- Thêm thông tin đặt bàn
+    INSERT INTO Reservation (idTable, customerName, phone, reservationTime, status)
+    VALUES (@idTable, @customerName, @phone, @reservationTime, 0);
+
+    -- Cập nhật trạng thái bàn
+    UPDATE TableFood SET reservationStatus = 1 WHERE id = @idTable;
+END
+GO
+EXEC USP_BookTable 5, 'Nguyễn Văn A', '0987654321', '2025-03-10 18:00:00';
+GO
+
+CREATE PROCEDURE USP_CancelReservation
+    @idTable INT
+AS
+BEGIN
+    -- Cập nhật trạng thái bàn về "Trống"
+    UPDATE TableFood 
+    SET status = N'Trống', reservationStatus = 0
+    WHERE id = @idTable;
+
+    -- Xóa thông tin đặt bàn trong bảng Reservation
+    DELETE FROM Reservation WHERE idTable = @idTable;
+END
+GO
